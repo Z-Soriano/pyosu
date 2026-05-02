@@ -1,0 +1,84 @@
+Program:
+  'begin'
+    commands*=Command
+  'end'
+;
+
+Command:
+    SetCommand
+  | AddCommand
+  | ModCommand
+  | PrintCommand
+  | CmpCommand
+  | LabelCommand
+  | JumpIfFalseCommand
+  | JumpCommand
+  | HaltCommand
+;
+
+ModCommand:
+  'mod' name=ID value=Value
+;
+
+SetCommand:
+  'set' name=ID value=Value
+;
+
+AddCommand:
+  'add' name=ID value=Value
+;
+
+PrintCommand:
+  'print' value=Value
+;
+
+CmpCommand:
+  'cmp' left=Value op=CmpOp right=Value
+;
+
+LabelCommand:
+  'label' name=ID
+;
+
+JumpCommand:
+  'jump' label=ID
+;
+
+JumpIfFalseCommand:
+  'jump_if_false' label=ID
+;
+
+HaltCommand:
+  'halt'
+;
+
+Value:
+    IntValue
+  | IdValue
+  | StringValue
+;
+
+IntValue:
+  value=INT
+;
+
+IdValue:
+  value=ID
+;
+
+StringValue:
+  value=STRING
+;
+
+CmpOp:
+    'eq'
+  | 'ne'
+  | 'lt'
+  | 'gt'
+  | 'le'
+  | 'ge'
+;
+
+Comment:
+  /\/\/.*$/
+;
