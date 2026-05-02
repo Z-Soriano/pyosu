@@ -127,7 +127,7 @@ def decode_spinner_bank(x: int) -> str:
         return "STRING"
     raise ValueError(f"spinner x out of range: {x}")
 
-
+# to create a new python to hitobjects generator, write a similar function
 def build_fizzbuzz_program() -> str:
     lines = ["[HitObjects]"]
     t = 1000
@@ -359,5 +359,6 @@ def build_fizzbuzz_program() -> str:
     lines.append(circle(X_HALT, 200, t))
 
     return "\n".join(lines)
+#replicate the below code to generate new generated_hitobjects#.txt files with different python programs
 with open("generated_hitobjects1.txt", "w", encoding="utf-8") as f:
     f.write(build_fizzbuzz_program())

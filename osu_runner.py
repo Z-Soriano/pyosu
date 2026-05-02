@@ -419,7 +419,7 @@ class OsuProgram:
 # ============================================================
 # MAIN
 # ============================================================
-
+#EDIT MAIN TO CHANGE FILE NAMES
 def main():
     osu_mm = metamodel_from_file("osu.tx")
 
@@ -433,12 +433,12 @@ def main():
 
     translator = OsuToDslTranslator()
     program_text = translator.translate(objects)
-
     with open("program.osuDsl", "w", encoding="utf-8") as f:
         f.write(program_text)
 
-    print("=== DSL ===")
-    print(program_text)
+    # print("=== DSL ===")
+    # print(program_text)
+    # to test generated DSL
 
     osu_model = osu_mm.model_from_file("program.osuDsl")
 
