@@ -1,21 +1,132 @@
 const fileInput = document.getElementById("fileInput");
-const output = document.getElementById("output");
+const rawOutput = document.getElementById("rawOutput");
+const formattedOutput = document.getElementById("formattedOutput");
 const statusText = document.getElementById("status");
 const downloadButton = document.getElementById("downloadButton");
+const copyButton = document.getElementById("copyButton");
 const clearButton = document.getElementById("clearButton");
+const expandButton = document.getElementById("expandButton");
+const collapseButton = document.getElementById("collapseButton");
 
 const STORAGE_KEY = "savedOsuContent";
 const FILE_NAME_KEY = "savedOsuFileName";
+
+function escapeHTML(text) {
+  return text.replace(/[&<>"']/g, function(char) {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#039;"
+    }[char];
+  });
+}
+
+function parseOsuSections(content) {
+  const lines = content.split(/\r?\n/);
+  const sections = {};
+  let currentSection = "Header";
+  sections[currentSection] = [];
+
+  for (const line of lines) {
+    const sectionMatch = line.match(/^\[(.+)\]$/);
+
+    if (sectionMatch) {
+      currentSection = sectionMatch[1];
+      sections[currentSection] = [];
+    } else {
+      sections[currentSection].push(line);
+    }
+  }
+
+  return sections;
+}
+
+function createDropdown(title, bodyHTML, openByDefault = false) {
+  return `
+    <details class="section-dropdown" ${openByDefault ? "open" : ""}>
+      <summary>${escapeHTML(title)}</summary>
+      <div class="section-body">
+        ${bodyHTML}
+      </div>
+    </details>
+  `;
+}
+
+function renderKeyValueSection(title, lines, openByDefault) {
+  const rows = lines
+    .filter(line => line.trim() && !line.trim().startsWith("//"))
+    .map(line => {
+      const colonIndex = line.indexOf(":");
+
+      if (colonIndex === -1) {
+        return `
+          <div class="key">Line</div>
+          <div class="value">${escapeHTML(line)}</div>
+        `;
+      }
+
+      const key = line.slice(0, colonIndex).trim();
+      const value = line.slice(colonIndex + 1).trim();
+
+      return `
+        <div class="key">${escapeHTML(key)}</div>
+        <div class="value">${escapeHTML(value)}</div>
+      `;
+    })
+    .join("");
+
+  const body = `
+    <div class="key-value-list">
+      ${rows || `<div class="empty-state">No visible values in this section.</div>`}
+    </div>
+  `;
+
+  return createDropdown(title, body, openByDefault);
+}
+
+function renderLineSection(title, lines, openByDefault) {
+  const items = lines
+    .filter(line => line.trim() && !line.trim().startsWith("//"))
+    .map(line => `<li>${escapeHTML(line)}</li>`)
+    .join("");
+
+  const body = items
+    ? `<ol class="line-list">${items}</ol>`
+    : `<div class="empty-state">No visible lines in this section.</div>`;
+
+  return createDropdown(title, body, openByDefault);
+}
+
+function renderFormattedContent(content) {
+  const sections = parseOsuSections(content);
+
+  const html = Object.entries(sections).map(([title, lines], index) => {
+    const keyValueSections = ["Header", "General", "Editor", "Metadata", "Difficulty", "Colours"];
+    const openByDefault = index === 0 || title === "Metadata";
+
+    if (keyValueSections.includes(title)) {
+      return renderKeyValueSection(title, lines, openByDefault);
+    }
+
+    return renderLineSection(title, lines, openByDefault);
+  }).join("");
+
+  formattedOutput.innerHTML = html || `<div class="card empty-state">No content found.</div>`;
+}
 
 function loadSavedContent() {
   const savedContent = localStorage.getItem(STORAGE_KEY);
   const savedFileName = localStorage.getItem(FILE_NAME_KEY);
 
   if (savedContent) {
-    output.textContent = savedContent;
-    statusText.textContent = `Saved content loaded from: ${savedFileName || "unknown file"}`;
+    rawOutput.textContent = savedContent;
+    renderFormattedContent(savedContent);
+    statusText.textContent = `Loaded saved content from: ${savedFileName || "unknown file"}`;
   } else {
-    output.textContent = "";
+    rawOutput.textContent = "";
+    formattedOutput.innerHTML = `<div class="card empty-state">Upload a .osu file to see dropdown sections here.</div>`;
     statusText.textContent = "No saved content yet.";
   }
 }
@@ -25,7 +136,7 @@ fileInput.addEventListener("change", function(event) {
 
   if (!file) return;
 
-  if (!file.name.endsWith(".osu")) {
+  if (!file.name.toLowerCase().endsWith(".osu")) {
     alert("Please upload a .osu file.");
     fileInput.value = "";
     return;
@@ -36,15 +147,27 @@ fileInput.addEventListener("change", function(event) {
   reader.onload = function(e) {
     const fileContent = e.target.result;
 
-    // This overwrites the old saved osu! file content.
     localStorage.setItem(STORAGE_KEY, fileContent);
     localStorage.setItem(FILE_NAME_KEY, file.name);
 
-    output.textContent = fileContent;
+    rawOutput.textContent = fileContent;
+    renderFormattedContent(fileContent);
     statusText.textContent = `Saved content updated from: ${file.name}`;
   };
 
   reader.readAsText(file);
+});
+
+expandButton.addEventListener("click", function() {
+  document.querySelectorAll(".section-dropdown").forEach(section => {
+    section.open = true;
+  });
+});
+
+collapseButton.addEventListener("click", function() {
+  document.querySelectorAll(".section-dropdown").forEach(section => {
+    section.open = false;
+  });
 });
 
 downloadButton.addEventListener("click", function() {
@@ -67,9 +190,22 @@ downloadButton.addEventListener("click", function() {
   URL.revokeObjectURL(link.href);
 });
 
+copyButton.addEventListener("click", async function() {
+  const savedContent = localStorage.getItem(STORAGE_KEY);
+
+  if (!savedContent) {
+    alert("There is no saved content to copy.");
+    return;
+  }
+
+  await navigator.clipboard.writeText(savedContent);
+  alert("Saved content copied.");
+});
+
 clearButton.addEventListener("click", function() {
   localStorage.removeItem(STORAGE_KEY);
   localStorage.removeItem(FILE_NAME_KEY);
+  fileInput.value = "";
   loadSavedContent();
 });
 
