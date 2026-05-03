@@ -2,33 +2,54 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>osu! Saved Content</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main>
-    <h1>osu! Saved Content</h1>
+  <main class="app">
+    <header class="hero">
+      <p class="eyebrow">osu! file tool</p>
+      <h1>Saved Content Viewer</h1>
+      <p class="subtitle">
+        Upload a .osu file to save it in the browser. Uploading another file replaces the old saved content.
+      </p>
+    </header>
 
-    <p>
-      Upload a <code>.osu</code> file. Its contents will be saved in this website as
-      <strong>saved content</strong>. Uploading a new file replaces the old saved content.
-    </p>
+    <section class="card upload-card">
+      <label for="fileInput" class="upload-box">
+        <span class="upload-icon">⬆</span>
+        <strong>Choose a .osu file</strong>
+        <small>The file contents will be saved as saved content.</small>
+      </label>
+      <input type="file" id="fileInput" accept=".osu">
+    </section>
 
-    <input type="file" id="fileInput" accept=".osu">
+    <section class="card toolbar">
+      <div>
+        <h2>Saved Content</h2>
+        <p id="status">No saved content yet.</p>
+      </div>
 
-    <div class="buttons">
-      <button id="downloadButton">Download Saved Content</button>
-      <button id="clearButton">Clear Saved Content</button>
-    </div>
+      <div class="buttons">
+        <button id="expandButton">Expand All</button>
+        <button id="collapseButton">Collapse All</button>
+        <button id="downloadButton">Download TXT</button>
+        <button id="copyButton">Copy</button>
+        <button id="clearButton" class="danger">Clear</button>
+      </div>
+    </section>
 
-    <section>
-      <h2>Saved Content</h2>
-      <p id="status">No saved content yet.</p>
-      <pre id="output"></pre>
+    <section id="formattedOutput" class="content-grid"></section>
+
+    <section class="card raw-card">
+      <details>
+        <summary>Show raw .osu text</summary>
+        <pre id="rawOutput"></pre>
+      </details>
     </section>
   </main>
 
   <script src="script.js"></script>
 </body>
 </html>
-
