@@ -425,15 +425,42 @@ class OsuProgram:
             else:
                 raise ValueError(f"Unknown command: {name}")
 
-
 # ============================================================
-# MAIN
+# Run
+# ============================================================
+def run_osu_program(osu_text: str) -> str:
+    hit_lines = extract_hitobject_lines(osu_text)
+    objects = parse_hitobjects(hit_lines)
+
+    translator = OsuToDslTranslator()
+    program_text = translator.translate(objects)
+
+    osu_mm = metamodel_from_file("osu.tx")
+    osu_model = osu_mm.model_from_str(program_text)
+
+    program = OsuProgram()
+
+    import io
+    import sys
+
+    old_stdout = sys.stdout
+    buffer = io.StringIO()
+
+    try:
+        sys.stdout = buffer
+        program.interpret(osu_model)
+    finally:
+        sys.stdout = old_stdout
+
+    return buffer.getvalue()
+# ============================================================
+# MAIN Local testing
 # ============================================================
 #EDIT MAIN TO CHANGE FILE NAMES
 def main():
     osu_mm = metamodel_from_file("osu.tx")
 
-    osu_text = read_osu_file("nb.osu")
+    osu_text = read_osu_file("workingEditor.osu")
     mode = parse_mode(osu_text)
     if mode != 0:
         raise ValueError(f"Only osu!standard is supported. Found Mode={mode}")

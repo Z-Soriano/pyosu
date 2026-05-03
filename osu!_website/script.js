@@ -210,3 +210,23 @@ clearButton.addEventListener("click", function() {
 });
 
 loadSavedContent();
+
+document.getElementById("runButton").addEventListener("click", () => {
+  const savedContent = localStorage.getItem(STORAGE_KEY);
+  fetch("http://localhost:5000/run", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      content: savedContent
+    })
+  })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("output").innerText = data.output;
+    })
+    .catch(err => {
+      console.error(err);
+    });
+});

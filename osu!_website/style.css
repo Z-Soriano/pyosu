@@ -248,3 +248,11 @@ pre {
     border-bottom: 0;
   }
 }
+#output {
+  height: 200px;
+  width: 1000px;
+  overflow-y: auto;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  padding: 12px;
+}
