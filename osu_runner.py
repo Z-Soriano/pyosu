@@ -76,19 +76,21 @@ def decode_slider_integer(x: int, y: int) -> int:
     return abs(x - y)
 
 
-def decode_spinner_bank(x: int) -> str:
-    if 0 <= x <= 102:
-        return "NORMAL"
-    if 103 <= x <= 204:
-        return "VARIABLE"
-    if 205 <= x <= 306:
-        return "LABEL"
-    if 307 <= x <= 408:
-        return "CONTROL"
-    if 409 <= x <= 512:
-        return "STRING"
-    raise ValueError(f"spinner x out of range: {x}")
+def decode_spinner_bank(start_time: int, end_time: int) -> str:
+    duration = end_time - start_time
 
+    if 1000 <= duration < 2000:
+        return "NORMAL"
+    if 2000 <= duration < 3000:
+        return "VARIABLE"
+    if 3000 <= duration < 4000:
+        return "LABEL"
+    if 4000 <= duration < 5000:
+        return "CONTROL"
+    if 5000 <= duration < 6000:
+        return "STRING"
+
+    raise ValueError(f"spinner duration out of range: {duration}")  
 
 # ============================================================
 # OSU FILE PARSING
@@ -100,6 +102,7 @@ class HitObject:
     y: int
     time: int
     obj_type: int
+    end_time: Optional[int]
     raw: str
 
 
@@ -136,14 +139,19 @@ def extract_hitobject_lines(text: str) -> List[str]:
 
 def parse_hitobject_line(line: str) -> HitObject:
     parts = line.split(",")
-    if len(parts) < 4:
-        raise ValueError(f"Invalid hitobject line: {line}")
+
+    obj_type = int(parts[3])
+    end_time = None
+
+    if (obj_type & 8) != 0:
+        end_time = int(parts[5])
 
     return HitObject(
         x=int(parts[0]),
         y=int(parts[1]),
         time=int(parts[2]),
-        obj_type=int(parts[3]),
+        obj_type=obj_type,
+        end_time=end_time,
         raw=line,
     )
 
@@ -189,7 +197,9 @@ class OsuToDslTranslator:
     def consume_spinners(self) -> None:
         while self.current() is not None and is_spinner(self.current().obj_type):
             obj = self.advance()
-            self.bank = decode_spinner_bank(obj.x)
+            if obj.end_time is None:
+                raise ValueError("Spinner missing end time.")
+            self.bank = decode_spinner_bank(obj.time, obj.end_time)
 
     def read_variable_name(self) -> str:
         self.consume_spinners()
@@ -423,7 +433,7 @@ class OsuProgram:
 def main():
     osu_mm = metamodel_from_file("osu.tx")
 
-    osu_text = read_osu_file("workingEditor.osu")
+    osu_text = read_osu_file("nb.osu")
     mode = parse_mode(osu_text)
     if mode != 0:
         raise ValueError(f"Only osu!standard is supported. Found Mode={mode}")

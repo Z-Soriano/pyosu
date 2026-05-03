@@ -45,8 +45,17 @@ def circle(x: int, y: int, t: int) -> str:
     return f"{x},{y},{t},1,0,0:0:0:0:"
 
 
-def spinner(x: int, t: int) -> str:
-    return f"{x},200,{t},12,0,{t+100},0:0:0:0:"
+def spinner_for_bank(bank: str, t: int) -> str:
+    durations = {
+        "NORMAL": 1500,
+        "VARIABLE": 2500,
+        "LABEL": 3500,
+        "CONTROL": 4500,
+        "STRING": 5500,
+    }
+
+    duration = durations[bank]
+    return f"256,192,{t},12,0,{t + duration},0:0:0:0:"
 
 
 def slider_from_int(n: int, t: int) -> str:
@@ -54,8 +63,8 @@ def slider_from_int(n: int, t: int) -> str:
 
 
 def emit_variable(name: str, start_t: int):
-    lines = [spinner(150, start_t)]
-    t = start_t + 200
+    lines = [spinner_for_bank("VARIABLE", start_t)]
+    t = start_t + 2600
     for ch in name:
         lines.append(circle(encode_letter_to_x(ch), 200, t))
         t += 100
@@ -63,8 +72,8 @@ def emit_variable(name: str, start_t: int):
 
 
 def emit_label(name: str, start_t: int):
-    lines = [spinner(250, start_t)]
-    t = start_t + 200
+    lines = [spinner_for_bank("LABEL", start_t)]
+    t = start_t + 3600
     for ch in name:
         lines.append(circle(encode_letter_to_x(ch), 200, t))
         t += 100
@@ -72,8 +81,9 @@ def emit_label(name: str, start_t: int):
 
 
 def emit_string(text: str, start_t: int):
-    lines = [spinner(450, start_t)]
-    t = start_t + 200
+    lines = [spinner_for_bank("STRING", start_t)]
+    t = start_t + 5600
+
     for ch in text:
         lines.append(circle(encode_string_to_x(ch), 200, t))
         t += 100
@@ -81,7 +91,7 @@ def emit_string(text: str, start_t: int):
 
 
 def emit_back_to_normal(t: int):
-    return spinner(50, t), t + 200
+    return spinner_for_bank("NORMAL", t), t + 1600
 
 
 def decode_letter_from_x(x: int) -> str:
@@ -113,20 +123,7 @@ def decode_cmp_from_y(y: int) -> str:
 def decode_slider_integer(x: int, y: int) -> int:
     return abs(x - y)
 
-
-def decode_spinner_bank(x: int) -> str:
-    if 0 <= x <= 102:
-        return "NORMAL"
-    if 103 <= x <= 204:
-        return "VARIABLE"
-    if 205 <= x <= 306:
-        return "LABEL"
-    if 307 <= x <= 408:
-        return "CONTROL"
-    if 409 <= x <= 512:
-        return "STRING"
-    raise ValueError(f"spinner x out of range: {x}")
-
+ 
 # to create a new python to hitobjects generator, write a similar function
 def build_fizzbuzz_program() -> str:
     lines = ["[HitObjects]"]
@@ -181,7 +178,7 @@ def build_fizzbuzz_program() -> str:
     lines.append(circle(X_CMP, 200, t))
     var_lines, t = emit_variable("y", t + 100)
     lines += var_lines
-    lines.append(spinner(350, t))
+    lines.append(spinner_for_bank("CONTROL", t))
     t += 200
     lines.append(circle(10, Y_EQ, t))
     t += 100
@@ -232,7 +229,7 @@ def build_fizzbuzz_program() -> str:
     lines.append(circle(X_CMP, 200, t))
     var_lines, t = emit_variable("y", t + 100)
     lines += var_lines
-    lines.append(spinner(350, t))
+    lines.append(spinner_for_bank("CONTROL", t))
     t += 200
     lines.append(circle(10, Y_EQ, t))
     t += 100
@@ -283,7 +280,7 @@ def build_fizzbuzz_program() -> str:
     lines.append(circle(X_CMP, 200, t))
     var_lines, t = emit_variable("y", t + 100)
     lines += var_lines
-    lines.append(spinner(350, t))
+    lines.append(spinner_for_bank("CONTROL", t))
     t += 200
     lines.append(circle(10, Y_EQ, t))
     t += 100
@@ -341,7 +338,7 @@ def build_fizzbuzz_program() -> str:
     lines.append(circle(X_CMP, 200, t))
     var_lines, t = emit_variable("x", t + 100)
     lines += var_lines
-    lines.append(spinner(350, t))
+    lines.append(spinner_for_bank("CONTROL", t))
     t += 200
     lines.append(circle(10, Y_GT, t))
     t += 100
@@ -359,6 +356,27 @@ def build_fizzbuzz_program() -> str:
     lines.append(circle(X_HALT, 200, t))
 
     return "\n".join(lines)
+def build_simple_print_program() -> str:
+    lines = ["[HitObjects]"]
+    t = 1000
+
+    X_PRINT = 168
+    X_HALT = 324
+
+    # print "Hello"
+    lines.append(circle(X_PRINT, 200, t))
+    str_lines, t = emit_string("Hello", t + 100)
+    lines += str_lines
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+
+    # halt
+    lines.append(circle(X_HALT, 200, t))
+
+    return "\n".join(lines)
 #replicate the below code to generate new generated_hitobjects#.txt files with different python programs
 with open("generated_hitobjects1.txt", "w", encoding="utf-8") as f:
     f.write(build_fizzbuzz_program())
+    
+with open("generated_hitobjects2.txt", "w", encoding="utf-8") as f:
+    f.write(build_simple_print_program())
