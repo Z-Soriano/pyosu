@@ -1,4 +1,5 @@
 #run python server.py to start server, then open html file
+#TODO: allow deployment rather than just local testing
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 

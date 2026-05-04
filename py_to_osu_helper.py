@@ -1,3 +1,5 @@
+timeScale = 2
+SLIDER_GAP = 1200
 OPCODE_BUCKETS = [
     (0, 25, "SET"),
     (26, 51, "ADD"),
@@ -64,29 +66,29 @@ def slider_from_int(n: int, t: int) -> str:
 
 def emit_variable(name: str, start_t: int):
     lines = [spinner_for_bank("VARIABLE", start_t)]
-    t = start_t + 2600
+    t = start_t + 2600 * timeScale
     for ch in name:
         lines.append(circle(encode_letter_to_x(ch), 200, t))
-        t += 100
+        t += 100 * timeScale 
     return lines, t
 
 
 def emit_label(name: str, start_t: int):
     lines = [spinner_for_bank("LABEL", start_t)]
-    t = start_t + 3600
+    t = start_t + 3600 * timeScale
     for ch in name:
         lines.append(circle(encode_letter_to_x(ch), 200, t))
-        t += 100
+        t += 100 * timeScale 
     return lines, t
 
 
 def emit_string(text: str, start_t: int):
     lines = [spinner_for_bank("STRING", start_t)]
-    t = start_t + 5600
+    t = start_t + 5600 * timeScale
 
     for ch in text:
         lines.append(circle(encode_string_to_x(ch), 200, t))
-        t += 100
+        t += 100 * timeScale 
     return lines, t
 
 
@@ -127,7 +129,7 @@ def decode_slider_integer(x: int, y: int) -> int:
 # to create a new python to hitobjects generator, write a similar function
 def build_fizzbuzz_program() -> str:
     lines = ["[HitObjects]"]
-    t = 1000
+    t = 1000 * timeScale
 
     # opcode x values
     X_SET = 12
@@ -151,7 +153,7 @@ def build_fizzbuzz_program() -> str:
     back, t = emit_back_to_normal(t)
     lines.append(back)
     lines.append(slider_from_int(1, t))
-    t += 200
+    t += SLIDER_GAP
 
     # label loop
     lines.append(circle(X_LABEL, 200, t))
@@ -173,7 +175,7 @@ def build_fizzbuzz_program() -> str:
     back, t = emit_back_to_normal(t)
     lines.append(back)
     lines.append(slider_from_int(15, t))
-    t += 200
+    t += SLIDER_GAP
 
     lines.append(circle(X_CMP, 200, t))
     var_lines, t = emit_variable("y", t + 100)
@@ -181,9 +183,9 @@ def build_fizzbuzz_program() -> str:
     lines.append(spinner_for_bank("CONTROL", t))
     t += 200
     lines.append(circle(10, Y_EQ, t))
-    t += 100
+    t += 100 * timeScale
     lines.append(slider_from_int(0, t))
-    t += 200
+    t += SLIDER_GAP
     back, t = emit_back_to_normal(t)
     lines.append(back)
 
@@ -224,7 +226,7 @@ def build_fizzbuzz_program() -> str:
     back, t = emit_back_to_normal(t)
     lines.append(back)
     lines.append(slider_from_int(3, t))
-    t += 200
+    t += SLIDER_GAP
 
     lines.append(circle(X_CMP, 200, t))
     var_lines, t = emit_variable("y", t + 100)
@@ -232,9 +234,9 @@ def build_fizzbuzz_program() -> str:
     lines.append(spinner_for_bank("CONTROL", t))
     t += 200
     lines.append(circle(10, Y_EQ, t))
-    t += 100
+    t += 100 * timeScale
     lines.append(slider_from_int(0, t))
-    t += 200
+    t += SLIDER_GAP
     back, t = emit_back_to_normal(t)
     lines.append(back)
 
@@ -275,7 +277,7 @@ def build_fizzbuzz_program() -> str:
     back, t = emit_back_to_normal(t)
     lines.append(back)
     lines.append(slider_from_int(5, t))
-    t += 200
+    t += SLIDER_GAP
 
     lines.append(circle(X_CMP, 200, t))
     var_lines, t = emit_variable("y", t + 100)
@@ -283,9 +285,9 @@ def build_fizzbuzz_program() -> str:
     lines.append(spinner_for_bank("CONTROL", t))
     t += 200
     lines.append(circle(10, Y_EQ, t))
-    t += 100
+    t += 100 * timeScale
     lines.append(slider_from_int(0, t))
-    t += 200
+    t += SLIDER_GAP
     back, t = emit_back_to_normal(t)
     lines.append(back)
 
@@ -333,7 +335,7 @@ def build_fizzbuzz_program() -> str:
     back, t = emit_back_to_normal(t)
     lines.append(back)
     lines.append(slider_from_int(1, t))
-    t += 200
+    t += SLIDER_GAP
 
     lines.append(circle(X_CMP, 200, t))
     var_lines, t = emit_variable("x", t + 100)
@@ -341,9 +343,9 @@ def build_fizzbuzz_program() -> str:
     lines.append(spinner_for_bank("CONTROL", t))
     t += 200
     lines.append(circle(10, Y_GT, t))
-    t += 100
+    t += 100 * timeScale
     lines.append(slider_from_int(100, t))
-    t += 200
+    t += SLIDER_GAP
     back, t = emit_back_to_normal(t)
     lines.append(back)
 
@@ -358,7 +360,7 @@ def build_fizzbuzz_program() -> str:
     return "\n".join(lines)
 def build_simple_print_program() -> str:
     lines = ["[HitObjects]"]
-    t = 1000
+    t = 1000 * timeScale
 
     X_PRINT = 168
     X_HALT = 324
