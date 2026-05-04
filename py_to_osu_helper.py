@@ -382,3 +382,234 @@ with open("generated_hitobjects1.txt", "w", encoding="utf-8") as f:
     
 with open("generated_hitobjects2.txt", "w", encoding="utf-8") as f:
     f.write(build_simple_print_program())
+
+def build_only_div4_program() -> str:
+    lines = ["[HitObjects]"]
+    t = 1000 * timeScale
+
+    X_SET = 12
+    X_ADD = 38
+    X_MOD = 140
+    X_PRINT = 168
+    X_CMP = 220
+    X_JUMP = 246
+    X_JUMP_IF_FALSE = 272
+    X_LABEL = 298
+    X_HALT = 324
+
+    Y_EQ = 10
+    Y_GT = 111
+
+    # set x 1
+    lines.append(circle(X_SET, 200, t))
+    var_lines, t = emit_variable("x", t + 100)
+    lines += var_lines
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+    lines.append(slider_from_int(1, t))
+    t += SLIDER_GAP
+
+    # label loop
+    lines.append(circle(X_LABEL, 200, t))
+    label_lines, t = emit_label("loop", t + 100)
+    lines += label_lines
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+
+    # y = x
+    lines.append(circle(X_SET, 200, t))
+    var_lines, t = emit_variable("yx", t + 100)
+    lines += var_lines
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+
+    # y % 4
+    lines.append(circle(X_MOD, 200, t))
+    var_lines, t = emit_variable("y", t + 100)
+    lines += var_lines
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+    lines.append(slider_from_int(4, t))
+    t += SLIDER_GAP
+
+    # cmp y == 0
+    lines.append(circle(X_CMP, 200, t))
+    var_lines, t = emit_variable("y", t + 100)
+    lines += var_lines
+    lines.append(spinner_for_bank("CONTROL", t))
+    t += 200
+    lines.append(circle(10, Y_EQ, t))
+    t += 100 * timeScale
+    lines.append(slider_from_int(0, t))
+    t += SLIDER_GAP
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+
+    # if NOT divisible → skip print
+    lines.append(circle(X_JUMP_IF_FALSE, 200, t))
+    label_lines, t = emit_label("after", t + 100)
+    lines += label_lines
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+
+    # print x (ONLY when divisible)
+    lines.append(circle(X_PRINT, 200, t))
+    var_lines, t = emit_variable("x", t + 100)
+    lines += var_lines
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+
+    # label after
+    lines.append(circle(X_LABEL, 200, t))
+    label_lines, t = emit_label("after", t + 100)
+    lines += label_lines
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+
+    # x += 1
+    lines.append(circle(X_ADD, 200, t))
+    var_lines, t = emit_variable("x", t + 100)
+    lines += var_lines
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+    lines.append(slider_from_int(1, t))
+    t += SLIDER_GAP
+
+    # stop at 100
+    lines.append(circle(X_CMP, 200, t))
+    var_lines, t = emit_variable("x", t + 100)
+    lines += var_lines
+    lines.append(spinner_for_bank("CONTROL", t))
+    t += 200
+    lines.append(circle(10, Y_GT, t))
+    t += 100 * timeScale
+    lines.append(slider_from_int(100, t))
+    t += SLIDER_GAP
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+
+    lines.append(circle(X_JUMP_IF_FALSE, 200, t))
+    label_lines, t = emit_label("loop", t + 100)
+    lines += label_lines
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+
+    # halt
+    lines.append(circle(X_HALT, 200, t))
+
+    return "\n".join(lines)
+with open("generated_hitobjects3.txt", "w", encoding="utf-8") as f:
+    f.write(build_only_div4_program())
+def build_fibonacci_program() -> str:
+    lines = ["[HitObjects]"]
+    t = 1000 * timeScale
+
+    X_SET = 12
+    X_ADD = 38
+    X_PRINT = 168
+    X_CMP = 220
+    X_JUMP = 246
+    X_JUMP_IF_FALSE = 272
+    X_LABEL = 298
+    X_HALT = 324
+
+    Y_GT = 111
+
+    def emit_set_int(var_name: str, value: int):
+        nonlocal t
+        lines.append(circle(X_SET, 200, t))
+        var_lines, t = emit_variable(var_name, t + 100)
+        lines.extend(var_lines)
+        back, t = emit_back_to_normal(t)
+        lines.append(back)
+        lines.append(slider_from_int(value, t))
+        t += SLIDER_GAP
+
+    def emit_set_var(left: str, right: str):
+        nonlocal t
+        lines.append(circle(X_SET, 200, t))
+        var_lines, t = emit_variable(left + right, t + 100)
+        lines.extend(var_lines)
+        back, t = emit_back_to_normal(t)
+        lines.append(back)
+
+    def emit_add_var(left: str, right: str):
+        nonlocal t
+        lines.append(circle(X_ADD, 200, t))
+        var_lines, t = emit_variable(left + right, t + 100)
+        lines.extend(var_lines)
+        back, t = emit_back_to_normal(t)
+        lines.append(back)
+
+    def emit_print_var(var_name: str):
+        nonlocal t
+        lines.append(circle(X_PRINT, 200, t))
+        var_lines, t = emit_variable(var_name, t + 100)
+        lines.extend(var_lines)
+        back, t = emit_back_to_normal(t)
+        lines.append(back)
+
+    def emit_label_line(label: str):
+        nonlocal t
+        lines.append(circle(X_LABEL, 200, t))
+        label_lines, t = emit_label(label, t + 100)
+        lines.extend(label_lines)
+        back, t = emit_back_to_normal(t)
+        lines.append(back)
+
+    def emit_jump(label: str):
+        nonlocal t
+        lines.append(circle(X_JUMP, 200, t))
+        label_lines, t = emit_label(label, t + 100)
+        lines.extend(label_lines)
+        back, t = emit_back_to_normal(t)
+        lines.append(back)
+
+    def emit_jump_if_false(label: str):
+        nonlocal t
+        lines.append(circle(X_JUMP_IF_FALSE, 200, t))
+        label_lines, t = emit_label(label, t + 100)
+        lines.extend(label_lines)
+        back, t = emit_back_to_normal(t)
+        lines.append(back)
+
+    def emit_cmp_gt(var_name: str, value: int):
+        nonlocal t
+        lines.append(circle(X_CMP, 200, t))
+        var_lines, t = emit_variable(var_name, t + 100)
+        lines.extend(var_lines)
+        lines.append(spinner_for_bank("CONTROL", t))
+        t += 200
+        lines.append(circle(10, Y_GT, t))
+        t += 100 * timeScale
+        lines.append(slider_from_int(value, t))
+        t += SLIDER_GAP
+        back, t = emit_back_to_normal(t)
+        lines.append(back)
+
+    emit_set_int("a", 1)
+    emit_set_int("b", 1)
+
+    emit_label_line("loop")
+
+    emit_cmp_gt("a", 100)
+    emit_jump_if_false("body")
+
+    lines.append(circle(X_HALT, 200, t))
+    t += 200
+
+    emit_label_line("body")
+
+    emit_print_var("a")
+
+    emit_set_var("c", "a")
+    emit_add_var("c", "b")
+    emit_set_var("a", "b")
+    emit_set_var("b", "c")
+
+    emit_jump("loop")
+
+    return "\n".join(lines)
+
+with open("generated_hitobjects_fibonacci.txt", "w", encoding="utf-8") as f:
+    f.write(build_fibonacci_program())
