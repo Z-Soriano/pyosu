@@ -1,0 +1,92 @@
+osu file format v14
+
+[General]
+AudioFilename: audio.mp3
+AudioLeadIn: 0
+PreviewTime: 205046
+Countdown: 0
+SampleSet: Soft
+StackLeniency: 0.7
+Mode: 0
+LetterboxInBreaks: 0
+WidescreenStoryboard: 0
+
+[Editor]
+Bookmarks: 37046,73046,85046,121046,181046,193046,229046
+DistanceSpacing: 0.8
+BeatDivisor: 2
+GridSize: 4
+TimelineZoom: 1
+
+[Metadata]
+Title:DOM IS GOATED
+TitleUnicode:CHASER
+Artist:ZACH
+ArtistUnicode:ZACH
+Creator:NATHAN
+Version:Easy
+Source:
+Tags:evilelvis v2 featured artist osu! record5-speed mirash pishifat siromaru Hiroshi Watanabe
+BeatmapID:1583058
+BeatmapSetID:751972
+
+[Difficulty]
+HPDrainRate:2
+CircleSize:3
+OverallDifficulty:2
+ApproachRate:3
+SliderMultiplier:1
+SliderTickRate:1
+
+[Events]
+//Background and Video events
+0,0,"CHASER_by_Melonturtle.png",0,0
+//Break Periods
+2,73246,82106
+2,97246,107606
+2,121246,125606
+2,181246,191606
+//Storyboard Layer 0 (Background)
+//Storyboard Layer 1 (Fail)
+//Storyboard Layer 2 (Pass)
+//Storyboard Layer 3 (Foreground)
+//Storyboard Sound Samples
+
+[TimingPoints]
+1046,375,4,2,1,60,1,0
+37046,-100,4,2,1,40,0,0
+133421,-100,4,2,1,50,0,0
+193046,-100,4,2,1,40,0,0
+205046,-100,4,2,1,60,0,1
+213483,-100,4,2,1,60,0,0
+217046,-100,4,2,1,60,0,1
+226046,-100,4,2,1,60,0,0
+229046,-100,4,2,1,60,0,1
+229139,-100,4,2,1,60,0,0
+
+
+[Colours]
+Combo1 : 0,255,128
+Combo2 : 232,0,232
+Combo3 : 135,15,255
+Combo4 : 0,244,62
+
+[HitObjects]
+168,200,1000,1,0,0:0:0:0:
+256,192,1100,12,0,6600,0:0:0:0:
+27,200,6700,1,0,0:0:0:0:
+114,200,7700,1,0,0:0:0:0:
+98,200,8700,1,0,0:0:0:0:
+413,200,9700,1,0,0:0:0:0:
+66,200,10700,1,0,0:0:0:0:
+145,200,11700,1,0,0:0:0:0:
+413,200,12700,1,0,0:0:0:0:
+51,200,13700,1,0,0:0:0:0:
+114,200,14700,1,0,0:0:0:0:
+3,200,15700,1,0,0:0:0:0:
+153,200,16700,1,0,0:0:0:0:
+35,200,17700,1,0,0:0:0:0:
+27,200,18700,1,0,0:0:0:0:
+256,192,19700,12,0,21200,0:0:0:0:
+324,200,21300,1,0,0:0:0:0:
+

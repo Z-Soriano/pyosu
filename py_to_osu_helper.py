@@ -1,4 +1,4 @@
-timeScale = 2
+timeScale = 1
 SLIDER_GAP = 1200
 OPCODE_BUCKETS = [
     (0, 25, "SET"),
@@ -69,7 +69,7 @@ def emit_variable(name: str, start_t: int):
     t = start_t + 2600 * timeScale
     for ch in name:
         lines.append(circle(encode_letter_to_x(ch), 200, t))
-        t += 100 * timeScale 
+        t += 500 * timeScale 
     return lines, t
 
 
@@ -78,7 +78,7 @@ def emit_label(name: str, start_t: int):
     t = start_t + 3600 * timeScale
     for ch in name:
         lines.append(circle(encode_letter_to_x(ch), 200, t))
-        t += 100 * timeScale 
+        t += 500 * timeScale 
     return lines, t
 
 
@@ -88,7 +88,7 @@ def emit_string(text: str, start_t: int):
 
     for ch in text:
         lines.append(circle(encode_string_to_x(ch), 200, t))
-        t += 100 * timeScale 
+        t += 500 * timeScale 
     return lines, t
 
 
@@ -613,3 +613,64 @@ def build_fibonacci_program() -> str:
 
 with open("generated_hitobjects_fibonacci.txt", "w", encoding="utf-8") as f:
     f.write(build_fibonacci_program())
+def build_dom_goated_program() -> str:
+    lines = ["[HitObjects]"]
+    t = 1000 * timeScale
+
+    X_PRINT = 168
+    X_HALT = 324
+
+    # print "dom is goated"
+    lines.append(circle(X_PRINT, 200, t))
+    str_lines, t = emit_string("dom is goated", t + 100)
+    lines.extend(str_lines)
+
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+
+    # halt
+    lines.append(circle(X_HALT, 200, t))
+
+    return "\n".join(lines)
+with open("generated_dom.txt", "w", encoding="utf-8") as f:
+    f.write(build_dom_goated_program())
+def build_simple_math_program() -> str:
+    lines = ["[HitObjects]"]
+    t = 1000 * timeScale
+
+    X_SET = 12
+    X_ADD = 38
+    X_PRINT = 168
+    X_HALT = 324
+
+    # x = 5
+    lines.append(circle(X_SET, 200, t))
+    var_lines, t = emit_variable("x", t + 100)
+    lines.extend(var_lines)
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+    lines.append(slider_from_int(5, t))
+    t += SLIDER_GAP
+
+    # x = x + 3
+    lines.append(circle(X_ADD, 200, t))
+    var_lines, t = emit_variable("x", t + 100)
+    lines.extend(var_lines)
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+    lines.append(slider_from_int(3, t))
+    t += SLIDER_GAP
+
+    # print x
+    lines.append(circle(X_PRINT, 200, t))
+    var_lines, t = emit_variable("x", t + 100)
+    lines.extend(var_lines)
+    back, t = emit_back_to_normal(t)
+    lines.append(back)
+
+    # halt
+    lines.append(circle(X_HALT, 200, t))
+
+    return "\n".join(lines)
+with open("simplemath.txt", "w", encoding="utf-8") as f:
+    f.write(build_simple_math_program())
