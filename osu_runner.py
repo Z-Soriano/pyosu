@@ -456,6 +456,32 @@ def run_osu_program(osu_text: str) -> str:
 # ============================================================
 # MAIN Local testing
 # ============================================================
+def run_osu_program(osu_text: str) -> str:
+    import io
+    import sys
+
+    hit_lines = extract_hitobject_lines(osu_text)
+    objects = parse_hitobjects(hit_lines)
+
+    translator = OsuToDslTranslator()
+    program_text = translator.translate(objects)
+
+    osu_mm = metamodel_from_file("osu.tx")
+    osu_model = osu_mm.model_from_str(program_text)
+
+    program = OsuProgram()
+
+    # capture ALL print output
+    old_stdout = sys.stdout
+    buffer = io.StringIO()
+
+    try:
+        sys.stdout = buffer
+        program.interpret(osu_model)
+    finally:
+        sys.stdout = old_stdout
+
+    return buffer.getvalue()
 #EDIT MAIN TO CHANGE FILE NAMES
 def main():
     osu_mm = metamodel_from_file("osu.tx")
@@ -485,3 +511,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    
